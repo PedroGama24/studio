@@ -61,8 +61,6 @@ O Claude escreve `plano.md` usando a [direção editorial](5-direcao-editorial.m
 - tabela: `# | início–fim | cena | entrada | gatilho (palavra @ tempo) | visual | print usado`;
 - zona do rosto a preservar, tirada dos quadros reais.
 
-Veja um plano real em [projetos/000. exemplo/plano.md](../projetos/000.%20exemplo/plano.md).
-
 **Nada é programado antes de você aprovar o plano.**
 
 ### 4. Programar as cenas

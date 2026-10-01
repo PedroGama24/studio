@@ -7,9 +7,8 @@ edicoes/*
 !edicoes/.gitkeep
 projetos/*
 !projetos/LEIA-ME.md
-!projetos/000. exemplo/
-projetos/000. exemplo/**/*.mp4
-projetos/000. exemplo/**/*.mov
-.claude/skills/
+.claude/skills/*
+!.claude/skills/video-curto/
+!.claude/skills/video-curto/**
 .claude/settings.local.json
 skills-lock.json
