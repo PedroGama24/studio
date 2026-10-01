@@ -2,18 +2,26 @@
 
 Você grava. O Claude edita.
 
-O resultado é um vídeo em pé, para Reels, TikTok e Shorts, com legenda grande e animação no ritmo da sua fala. Você não precisa saber programar. Você cola um texto, coloca o vídeo na pasta que ele indicar e aprova.
+Abra o Claude na aba **Code**. Cole o texto abaixo inteiro. Você não precisa entender o texto: o Claude executa.
 
-## O que você faz
+```text
+Instala o estúdio de vídeo curto do Pedro Gama.
+Repositório: https://github.com/PedroGama24/studio.git
+Pasta: C:\dev\studio no Windows, ou ~/dev/studio no Mac e no Linux. Fora do OneDrive, iCloud e Dropbox.
 
-1. Abra o Claude na aba **Code**.
-2. Cole o texto que está em [COMECE.md](COMECE.md).
-3. Quando ele pedir, coloque o seu vídeo na pasta que ele mostrar.
-4. Abra o Claude de novo, dentro dessa pasta, e diga que o vídeo está lá.
-5. Ele pergunta o nome, mostra 4 linhas do que vai fazer e espera você dizer **pode**.
-6. No fim, ele entrega o vídeo e pergunta se você quer mudar alguma coisa.
+Faça isto, nesta ordem:
+1. Clone o repositório nessa pasta. Se a pasta já existir, entre nela e atualize com git pull.
+2. Rode npm run instalar.
+3. Se faltar node, python ou ffmpeg, instale (winget no Windows, brew no Mac) e rode npm run instalar de novo.
+4. A pasta projetos/ vem vazia de propósito. Crie projetos/001. video/video/ se ela ainda não existir.
+5. Me diga o caminho completo dessa pasta e pare.
 
-Prints de telas, notícias ou números deixam a edição mais forte. Se você não tiver, ele edita mesmo assim.
+Diga só isto para a pessoa: coloca o seu vídeo nessa pasta (MP4 ou MOV, já cortado) e abre uma sessão nova do Claude dentro da pasta studio. Coisas novas só aparecem numa sessão nova.
+
+Não crie outro projeto de vídeo do zero. O estúdio já está neste repositório: siga o CLAUDE.md e o guias/0-video-curto.md.
+```
+
+Na sessão nova, avise que o vídeo está lá. O Claude pergunta o nome, mostra 4 linhas, espera um "pode", edita e pergunta se você quer mudar alguma coisa.
 
 ## Créditos
 
