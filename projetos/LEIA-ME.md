@@ -5,7 +5,7 @@ Esta pasta começa vazia. O Claude cria o resto e te diz o caminho. Você só co
 ```text
 projetos/
 └─ 001. video/
-   ├─ video/     seu vídeo, já cortado (MP4 ou MOV)
+   ├─ video/     um vídeo ou vários clipes, como saíram do celular (MP4 ou MOV)
    └─ prints/    opcional: fotos de telas, notícias ou números que você cita
 ```
 

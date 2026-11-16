@@ -1,6 +1,6 @@
 # Primeiros passos
 
-Este tutorial leva você do zero até a primeira edição. Leva uns 20 minutos, a maior parte esperando instalações.
+Este guia cuida só da instalação. Leva uns 20 minutos, a maior parte esperando. Se você usa o app do Claude, o prompt do [README](../README.md) já faz tudo isto sozinho.
 
 ---
 
@@ -9,11 +9,10 @@ Este tutorial leva você do zero até a primeira edição. Leva uns 20 minutos, 
 | Item | Para quê | Obrigatório? |
 |---|---|---|
 | **Claude** com acesso ao Claude Code (plano Pro ou Max) | é o seu diretor de vídeo | sim |
-| **Node.js** (versão LTS) | roda o Remotion | sim |
+| **Node.js** 22.18 ou mais novo (o ideal é a 24) | roda o Remotion | sim |
 | **Python** 3.10 ou mais novo | transcrição e skill `watch` | sim |
 | **FFmpeg** | lê e converte vídeo | sim |
-| **Git** | baixar e atualizar este repositório | recomendado |
-| Conta **Higgsfield** com créditos | só para o Nível 2 | não |
+| **Git** | baixar e atualizar este repositório | sim |
 
 Você pode usar o Claude de três jeitos. Todos funcionam com este repositório:
 
@@ -57,13 +56,7 @@ brew install node python ffmpeg yt-dlp git
 
 ### Jeito fácil: peça ao Claude
 
-Abra uma sessão **Code** no Claude e cole:
-
-```text
-Instala o repositório https://github.com/PedroGama24/studio na pasta C:\dev (siga o arquivo COMECE.md).
-```
-
-Ele clona, instala as dependências e as duas skills gratuitas (**remotion-best-practices** e **watch**). Quando terminar, **abra uma sessão nova** do Claude dentro da pasta `studio`: skills novas só aparecem numa sessão nova.
+Abra uma sessão **Code** no Claude e cole o prompt do [COMECE.md](../COMECE.md). Ele clona, instala as dependências e as duas skills gratuitas (**remotion-best-practices** e **watch**). Quando terminar, ele já começa a conversa sobre a sua marca na mesma sessão. Para editar um vídeo depois, **abra uma sessão nova** do Claude dentro da pasta `studio`: skills novas só aparecem numa sessão nova.
 
 ### Jeito manual
 
@@ -78,15 +71,13 @@ npm run instalar
 
 O `npm run instalar` faz tudo de uma vez: dependências do Remotion, transcrição local (`faster-whisper`), skill `remotion-best-practices` (dentro do projeto) e skill `watch`. No fim ele mostra um resumo do que deu certo e do que falhou.
 
-Sem Git? Baixe o ZIP pelo botão verde **Code → Download ZIP** no GitHub, descompacte e rode `npm run instalar` dentro da pasta.
-
 Teste o Remotion:
 
 ```bash
 npm run studio
 ```
 
-Abre uma página no navegador com os exemplos da galeria. Se você vê as composições em `Estilos` e consegue dar play, está tudo certo. Feche com `Ctrl+C` no terminal.
+Abre uma página no navegador com os estilos verticais. Se você vê as composições em `Estilos` e consegue dar play, está tudo certo. Feche com `Ctrl+C` no terminal.
 
 ## 4. Sobre as skills gratuitas
 
@@ -109,76 +100,8 @@ A `watch` pode usar a Groq para transcrever rápido. É grátis dentro de um lim
 
 Sem essa chave tudo funciona igual: o `tools/transcrever.py` transcreve localmente, de graça.
 
-## 6. (Só para o Nível 2) Conectar a Higgsfield
-
-Siga a seção [Conectar a Higgsfield ao Claude](4-nivel-2-higgsfield.md#1-conectar-a-higgsfield-ao-claude). Resumo: no Claude Desktop, **Configurações → Conectores → Adicionar conector personalizado**, URL `https://mcp.higgsfield.ai/mcp`, e login na sua conta.
-
 ---
 
-## 7. Entendendo as pastas
+## 6. Primeira conversa
 
-```text
-studio/
-├─ CLAUDE.md           o "diretor": instruções que o Claude lê ao abrir o projeto
-├─ README.md           visão geral
-├─ guias/              os manuais (você está aqui)
-├─ estilos/            galeria de estilos de referência, com imagens
-│
-├─ projetos/           ← VOCÊ COLOCA AQUI o vídeo e os prints
-│  └─ 001. meu-video/
-│     ├─ video/        o vídeo gravado, já cortado (nunca é alterado)
-│     ├─ prints/       prints e imagens do que você quer ver animado
-│     ├─ frames/       (gerado) quadros que o Claude "assistiu"
-│     ├─ transcricao/  (gerado) texto com o tempo de cada palavra
-│     ├─ hf/           (Nível 2) imagens e vídeos gerados na Higgsfield
-│     ├─ plano.md      (gerado) o plano de edição que você aprova
-│     └─ edit.jsx      (Nível 2) roteiro de montagem no Higgsedit
-│
-├─ edicoes/            ← AQUI SAI o vídeo pronto
-│  └─ 001. meu-video/
-│
-├─ src/                código do Remotion (Nível 1)
-│  ├─ Root.tsx         lista de vídeos registrados
-│  ├─ videos/          uma subpasta por vídeo seu
-│  ├─ estilos/         código dos exemplos da galeria
-│  └─ _shared/         peças reaproveitadas
-├─ tools/              transcrição local e gerador da Higgsfield Cloud API
-└─ scripts/            verificações automáticas
-```
-
-Regra de bolso: **você só mexe em `projetos/`** (para entregar material) **e em `edicoes/`** (para pegar o resultado). O resto é trabalho do Claude.
-
-A pasta `projetos/` inteira fica fora do Git (`.gitignore`), com exceção do exemplo. Assim, seus vídeos e prints não vão parar no GitHub por acidente se você publicar um fork.
-
-## 8. Sua primeira edição
-
-1. Crie a pasta `projetos/001. meu-video/video/` e coloque seu vídeo lá (MP4 ou MOV, já cortado).
-2. Crie `projetos/001. meu-video/prints/` e salve prints de tudo o que você cita no vídeo: sites, notícias, telas de ferramentas.
-3. Abra a pasta `studio` no Claude (Desktop → Code → escolher pasta; ou `claude` no terminal dentro dela).
-4. O Claude vai perguntar se você quer o **Nível 1** ou o **Nível 2**. Responda.
-5. Diga o que quer. Exemplo:
-   ```text
-   Edita o projeto 001. Quero o vídeo completo, estilo minimal suíço, sem exagero de zoom.
-   ```
-6. Aprove (ou ajuste) o plano de edição que ele apresentar.
-7. Confira os quadros de revisão que ele mostrar.
-8. Pegue o vídeo em `edicoes/001. meu-video/`.
-
-Não sabe o que pedir? Pergunte ao próprio Claude: "o que dá para fazer com esse vídeo?". Ele foi instruído a sugerir opções.
-
-## 9. Glossário rápido
-
-| Termo | Significado |
-|---|---|
-| **Master** | o seu vídeo gravado e cortado, a base de tudo |
-| **Inserção** | qualquer elemento que entra por cima ou no lugar da câmera |
-| **Overlay** | inserção com fundo transparente, que fica por cima do vídeo |
-| **B-roll** | imagens de apoio em tela cheia enquanto você continua falando |
-| **Split / tela dividida** | conteúdo de um lado, câmera do outro |
-| **PiP** (picture-in-picture) | câmera pequena num canto |
-| **Push-in / punch-in** | zoom lento / zoom rápido na câmera |
-| **Gatilho** | a palavra falada que faz uma inserção aparecer |
-| **Render** | gerar o arquivo de vídeo final |
-| **Still** | um quadro parado exportado como imagem, usado para revisão |
-| **MCP** | o "cabo" que conecta o Claude a um serviço externo, como a Higgsfield |
-| **Skill** | um pacote de instruções que ensina o Claude a fazer uma tarefa |
+Se usou o prompt do COMECE.md, a conversa sobre a sua marca já começou na mesma sessão; senão, abra uma sessão **Code** na pasta `studio` e peça "quero conversar sobre a minha marca". Quando a análise terminar, abra uma conversa nova na mesma pasta e diga "quero editar um vídeo". O vídeo pronto sai em `edicoes/`.

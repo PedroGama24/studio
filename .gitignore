@@ -5,10 +5,13 @@ tmp/
 .env
 edicoes/*
 !edicoes/.gitkeep
+minha-marca/
 projetos/*
 !projetos/LEIA-ME.md
 .claude/skills/*
 !.claude/skills/video-curto/
 !.claude/skills/video-curto/**
+!.claude/skills/minha-marca/
+!.claude/skills/minha-marca/**
 .claude/settings.local.json
 skills-lock.json

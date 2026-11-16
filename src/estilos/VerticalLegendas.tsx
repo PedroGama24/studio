@@ -1,12 +1,10 @@
 import React from 'react';
 import {AbsoluteFill, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CameraFalsa, useEntrada} from './_comum';
+import {TEMA_PADRAO, type Tema} from '../_shared/tema';
 
 // Estilo "legenda dinâmica" (9:16, Reels/TikTok/Shorts): câmera cheia, legenda grande palavra por palavra
 // com a palavra falada em destaque. Num projeto real, os tempos vêm do palavras.json da transcrição.
-
-const COR = {destaque: '#FFE14D', texto: '#FFFFFF', chip: '#111111'};
-const FONTE = "'Arial Black', 'Helvetica Neue', Arial, sans-serif";
 
 const palavras = [
   {w: 'Edite', s: 0.5}, {w: 'vídeos', s: 0.85}, {w: 'conversando', s: 1.2},
@@ -15,7 +13,8 @@ const palavras = [
 ];
 const blocos = [palavras.slice(0, 6), palavras.slice(6)];
 
-export const VerticalLegendas: React.FC = () => {
+export const VerticalLegendas: React.FC<{tema?: Tema}> = ({tema}) => {
+  const {destaque, texto, fundo, fonte} = tema ?? TEMA_PADRAO;
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = frame / fps;
@@ -25,7 +24,7 @@ export const VerticalLegendas: React.FC = () => {
   const zoom = 1 + 0.06 * (t / 6);
 
   return (
-    <AbsoluteFill style={{background: '#000', fontFamily: FONTE}}>
+    <AbsoluteFill style={{background: '#000', fontFamily: fonte}}>
       <AbsoluteFill style={{transform: `scale(${zoom})`}}>
         <CameraFalsa fundo="#4a3b30" cor="#6d5a4a" preencher />
       </AbsoluteFill>
@@ -33,7 +32,7 @@ export const VerticalLegendas: React.FC = () => {
       <div
         style={{
           position: 'absolute', top: 170, left: '50%', transform: `translateX(-50%) scale(${0.8 + 0.2 * chip})`, opacity: chip,
-          background: COR.chip, color: COR.destaque, fontSize: 40, padding: '16px 34px', borderRadius: 60, letterSpacing: 2,
+          background: fundo, color: destaque, fontSize: 40, padding: '16px 34px', borderRadius: 60, letterSpacing: 2,
         }}
       >
         DICA RÁPIDA
@@ -51,8 +50,8 @@ export const VerticalLegendas: React.FC = () => {
             <span
               key={p.w + p.s}
               style={{
-                color: eAtiva ? COR.chip : COR.texto,
-                background: eAtiva ? COR.destaque : 'transparent',
+                color: eAtiva ? fundo : texto,
+                background: eAtiva ? destaque : 'transparent',
                 padding: '0 14px', borderRadius: 14,
                 transform: `scale(${0.7 + 0.3 * pop})`, display: 'inline-block',
                 textShadow: eAtiva ? 'none' : '0 6px 24px rgba(0,0,0,.6)',

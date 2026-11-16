@@ -2,16 +2,20 @@
   "name": "studio",
   "version": "1.0.0",
   "private": true,
-  "description": "Estúdio de edição de vídeo com Claude Code: Nível 1 (Remotion, gratuito) e Nível 2 (Higgsfield).",
+  "description": "Estúdio de vídeo curto com Claude Code e Remotion.",
   "scripts": {
     "instalar": "node scripts/instalar.mjs",
     "studio": "remotion studio src/index.ts",
     "compositions": "remotion compositions src/index.ts",
-    "typecheck": "tsc --noEmit && node scripts/check-split-layouts.mjs"
+    "typecheck": "tsc --noEmit && node scripts/check-split-layouts.mjs",
+    "verificar": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"scripts/*.test.mjs\"",
+    "render": "node tools/render.mjs"
   },
   "dependencies": {
+    "@remotion/bundler": "4.0.451",
     "@remotion/cli": "4.0.451",
     "@remotion/media": "4.0.451",
+    "@remotion/renderer": "4.0.451",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "remotion": "4.0.451"
