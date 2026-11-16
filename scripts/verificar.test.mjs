@@ -87,9 +87,10 @@ test('readme', () => {
   };
   const prompt = bloco('README.md');
   assert.equal(bloco('COMECE.md'), prompt, 'README.md e COMECE.md devem ter o mesmo prompt');
-  for (const trecho of ['https://github.com/PedroGama24/studio.git', 'C:\\dev\\studio', '.claude/skills/minha-marca/SKILL.md', 'winget', 'brew']) {
+  for (const trecho of ['https://github.com/PedroGama24/studio.git', 'C:\\dev\\studio', '.claude/skills/minha-marca/SKILL.md', 'winget', 'brew', 'git pull', 'npm run instalar']) {
     assert.ok(prompt.includes(trecho), `o prompt deve conter "${trecho}"`);
   }
+  for (const f of ['README.md', 'COMECE.md']) assert.doesNotMatch(ler(f), /higgsfield|nível|hf\/|edit\.jsx/i, `${f} não pode citar Higgsfield, nível, hf/ nem edit.jsx`);
   const readme = ler('README.md');
   assert.ok(readme.includes('Macks Wendhell') && readme.includes('LICENSE'), 'README deve creditar Macks Wendhell e citar LICENSE');
   assert.doesNotMatch(ler('guias/1-primeiros-passos.md'), /higgsfield|nível/i, 'guia de instalação não pode citar Higgsfield nem nível');
