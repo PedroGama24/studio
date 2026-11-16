@@ -18,7 +18,7 @@ Não crie outro projeto, não copie o Remotion para outra pasta e não reescreva
 
 O único código novo é o vídeo dela, em `src/videos/<slug>/`.
 
-Leia este guia por inteiro antes de organizar, transcrever ou programar. Não ofereça overlay em MOV, outro formato além do vertical nem outros estilos além destes. Isso só entra se ela pedir com todas as letras.
+Leia este guia por inteiro antes de organizar, transcrever ou programar. Não ofereça overlay em MOV, outro formato além do vertical nem outros estilos além destes. Se ela pedir, explique que o estúdio entrega só o MP4 vertical.
 
 ## O que assumir
 
@@ -70,7 +70,7 @@ Crie a próxima pasta `projetos/NNN. video/video/` (três dígitos, maior númer
 >
 > Pode ser assim?
 
-Sem análise, a linha 2 diz: "Visual padrão do estúdio, porque ainda não olhei o seu Instagram."
+Sem análise, a linha 2 diz: "Visual: **{estilo}**, no padrão do estúdio, porque ainda não olhei o seu Instagram."
 
 Estilo, escolha você:
 
@@ -113,7 +113,7 @@ Para clipes sem fala (processo, antes e depois, resultado). Você **pode** escol
 
 - **Trecho:** pelos quadros, pegue de cada clipe o pedaço com mais movimento ou o momento do resultado, em geral de 1,5 a 4 s. `de` e `ate` são segundos do próprio clipe e `ate` não passa da duração dele.
 - **Ordem:** abra com o que mais prende (pela análise; sem ela, o resultado pronto por 1 a 2 s) e depois conte a história na ordem em que aconteceu.
-- **Duração:** a que a análise mostra nos Reels dela; sem isso, de 15 a 30 s.
+- **Duração:** a que a análise mostra nos Reels dela; sem isso, de 15 a 30 s. Se a soma dos melhores trechos não chegar, o vídeo fica mais curto (ou alongue o trecho dentro do próprio clipe); nunca repita um clipe.
 - **Clipe deitado:** ele preenche a tela cortando as laterais, sem deformar. Confira nos quadros se o principal continua visível; se não, use outro trecho.
 - **Textos:** frases curtas (2 a 6 palavras), no tom de "Tom das legendas" da análise, uma por clipe ou a cada 2 a 3 s. Sem emoji se ela não usa emoji. Não escreva o que não aconteceu no vídeo.
 - **Som:** o som ambiente dos clipes fica (`somOriginal` padrão). Se ela pedir silêncio, `somOriginal: false`.
@@ -149,11 +149,11 @@ Quadros: a skill `watch`, como ela mesma manda, com saída em `projetos/<NNN. no
 - **Montagem:** use `VerticalMontagem` com `clipes` (`{src, de, ate}`, `src` = `staticFile('<NNN. nome>/video/<arquivo>')`), `textos` (`{texto, s, e}`, segundos do vídeo final) e `tema`. O `durationInFrames` da composição vem de `duracaoMontagem(clipes, fps)` (`src/_shared/montagem.ts`), nunca escrito à mão. fps 30.
 - Tempos em segundos (do `palavras.json` ou do plano), convertidos pelo fps. `<Sequence premountFor={fps}>` em toda cena com tempo. Animação só com `useCurrentFrame()`, nada de transição ou animação CSS.
 
-**Movimento.** Câmera: push-in suave de 1,00 a 1,04 ao longo de um trecho; ênfase até ~1,12 em 2 a 3 s. O deslocamento não passa de `largura × (escala − 1) / 2`, senão aparece borda preta. Troca de layout em 0,9 a 1,2 s com `Easing.inOut(Easing.cubic)`, câmera e painel juntos, mesma curva e mesma janela. Pode começar uns quadros antes da palavra, mas o conteúdo nunca aparece antes de ser dito. Misture corte seco (mudança de assunto, ritmo de lista), fade curto de 10 a 14 quadros (mesma atmosfera) e transformação animada (só quando a mudança tem significado). Nunca tela vazia ou preta entre cenas. Painéis sobem com mola suave; texto entra palavra por palavra.
+**Movimento (com fala).** Câmera: push-in suave de 1,00 a 1,04 ao longo de um trecho; ênfase até ~1,12 em 2 a 3 s. O deslocamento não passa de `largura × (escala − 1) / 2`, senão aparece borda preta. Troca de layout em 0,9 a 1,2 s com `Easing.inOut(Easing.cubic)`, câmera e painel juntos, mesma curva e mesma janela. Pode começar uns quadros antes da palavra, mas o conteúdo nunca aparece antes de ser dito. Misture corte seco (mudança de assunto, ritmo de lista), fade curto de 10 a 14 quadros (mesma atmosfera) e transformação animada (só quando a mudança tem significado). Nunca tela vazia ou preta entre cenas. Painéis sobem com mola suave; texto entra palavra por palavra.
 
-**Cuidados fixos**, em qualquer estilo:
+**Cuidados fixos**, em qualquer estilo. Na montagem, os textos seguem o clipe:
 
-1. Tempo por palavra: todo gatilho usa o início exato da palavra no `palavras.json`.
+1. Com fala, tempo por palavra: todo gatilho usa o início exato da palavra no `palavras.json`.
 2. Rosto livre: nada cobre olhos, boca ou contorno do rosto, medidos nos quadros reais.
 3. Legível na tela de um celular.
 4. Sem texto dentro de imagem gerada por IA: todo texto entra na montagem.

@@ -8,7 +8,7 @@ import {getInputProps, getRemotionEnvironment, Html5Audio, Html5Video, Offthread
  */
 export const emPrevia = () => !getRemotionEnvironment().isRendering;
 
-// Caminho relativo a projetos/ de um src do staticFile ("/public/006.%20x/pack/luz-02.mp4" → "006. x/pack/luz-02.mp4").
+// Caminho relativo a projetos/ de um src do staticFile ("/public/001.%20x/video/a.mp4" → "001. x/video/a.mp4").
 const relativo = (src: string) => decodeURIComponent(new URL(src, 'http://local').pathname).replace(/^\/(public\/)?/, '');
 let rapidos: Set<string> | null = null;
 /** Arquivo acima de 30 fps (lista `videosRapidos` que o render passa nas input props; tools/render-blocos.mjs). */

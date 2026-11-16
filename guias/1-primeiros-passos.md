@@ -56,7 +56,7 @@ brew install node python ffmpeg yt-dlp git
 
 ### Jeito fácil: peça ao Claude
 
-Abra uma sessão **Code** no Claude e cole o prompt do [COMECE.md](../COMECE.md). Ele clona, instala as dependências e as duas skills gratuitas (**remotion-best-practices** e **watch**). Quando terminar, **abra uma sessão nova** do Claude dentro da pasta `studio`: skills novas só aparecem numa sessão nova.
+Abra uma sessão **Code** no Claude e cole o prompt do [COMECE.md](../COMECE.md). Ele clona, instala as dependências e as duas skills gratuitas (**remotion-best-practices** e **watch**). Quando terminar, ele já começa a conversa sobre a sua marca na mesma sessão. Para editar um vídeo depois, **abra uma sessão nova** do Claude dentro da pasta `studio`: skills novas só aparecem numa sessão nova.
 
 ### Jeito manual
 
@@ -77,7 +77,7 @@ Teste o Remotion:
 npm run studio
 ```
 
-Abre uma página no navegador com os exemplos da galeria. Se você vê as composições em `Estilos` e consegue dar play, está tudo certo. Feche com `Ctrl+C` no terminal.
+Abre uma página no navegador com os estilos verticais. Se você vê as composições em `Estilos` e consegue dar play, está tudo certo. Feche com `Ctrl+C` no terminal.
 
 ## 4. Sobre as skills gratuitas
 
@@ -104,4 +104,4 @@ Sem essa chave tudo funciona igual: o `tools/transcrever.py` transcreve localmen
 
 ## 6. Primeira conversa
 
-Depois de instalar, abra uma sessão **Code** na pasta `studio` e peça "quero conversar sobre a minha marca". Quando a análise terminar, abra uma conversa nova na mesma pasta e diga "quero editar um vídeo". O vídeo pronto sai em `edicoes/`.
+Se usou o prompt do COMECE.md, a conversa sobre a sua marca já começou na mesma sessão; senão, abra uma sessão **Code** na pasta `studio` e peça "quero conversar sobre a minha marca". Quando a análise terminar, abra uma conversa nova na mesma pasta e diga "quero editar um vídeo". O vídeo pronto sai em `edicoes/`.

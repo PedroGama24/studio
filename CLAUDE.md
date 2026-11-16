@@ -19,7 +19,7 @@ Não pergunte formato, estilo nem intensidade. Assuma o que o guia manda e conte
 - **Uma decisão por vez.** Não despeje dez perguntas; pergunte o essencial e assuma padrões sensatos para o resto, dizendo quais assumiu.
 - **Prints.** Sem print, edite mesmo assim. Se a fala cita site, notícia ou tela e não há print, diga qual arquivo faltou, numa frase, sem travar a edição.
 - **Pontos de aprovação:** as 4 linhas do visual antes de programar. O `plano.md` é o seu roteiro, escrito depois do "pode". No fim do MP4, pergunte se ela quer alterar alguma coisa.
-- **O pedido da pessoa manda.** A direção editorial é repertório, não regra; quando ela pedir outra coisa, siga e registre no plano.
+- **O pedido da pessoa manda.** O guia é repertório, não regra; quando ela pedir outra coisa, siga e registre no plano.
 - **Honestidade.** Se algo não ficou bom ou não é possível na ferramenta, diga e proponha alternativa.
 
 ## Regras que valem sempre

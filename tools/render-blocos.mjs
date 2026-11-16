@@ -68,7 +68,7 @@ export function planejarBlocos({de, ate, bloco = BLOCO, global, chave}) {
 
 /**
  * Vídeos acima de 30 fps, relativos a projetos/. Com a placa de vídeo ligada, o <Video> do @remotion/media
- * trava no 1º quadro desses arquivos (flashes de 60 fps do pack: 30 e 25 fps passam); a composição troca
+ * trava no 1º quadro desses arquivos (30 e 25 fps passam); a composição troca
  * só eles pelo <OffthreadVideo> (src/_shared/previa.tsx), que extrai com ffmpeg fora do Chrome.
  * O fps de cada arquivo fica em cache (caminho + tamanho + data).
  */
@@ -117,7 +117,7 @@ function podarCache(limiteGB = Number(process.env.RENDER_CACHE_GB) || 20) {
  * a imagem de [a, b] muda; null = não usar cache. global: tudo que vale para o vídeo inteiro
  * (hash do código, escala, qualidade).
  * som: caminho de um WAV para gravar também o som do mesmo trecho. Ele entra primeiro na fila, inteiro
- * (concurrency 1: com várias abas o som do 006 levava ~5× mais) e sai enquanto os outros Chromes
+ * (concurrency 1: com várias abas o som levava ~5× mais) e sai enquanto os outros Chromes
  * desenham a imagem. O som não vai para o cache.
  */
 export async function renderEmBlocos({renderMedia, openBrowser, serveUrl, composition, inputProps, navegadores, de = 0, ate = composition.durationInFrames, bloco = BLOCO, chave, global, opcoes = {}, saida, som, cancelSignal, onProgress = () => {}}) {
@@ -131,7 +131,7 @@ export async function renderEmBlocos({renderMedia, openBrowser, serveUrl, compos
     .map(x => ({...x, feitos: 0}));
   const memoria = memoriaPorChrome(os.totalmem(), navegadores.length);
   const pedacosSom = [];
-  // Som numa peça só, sem emendas: cortado em pedaços, a 2ª parte do 015 saía 16 amostras deslocada.
+  // Som numa peça só, sem emendas: cortado em pedaços, a 2ª parte saía 16 amostras deslocada.
   if (som) pedacosSom.push({som: true, a: de, b: ate - 1, arq: path.join(pastaTemp, `som-${de}.wav`)});
   const reaproveitados = blocos.filter(x => x.pronto);
   const agora = new Date();
@@ -152,7 +152,7 @@ export async function renderEmBlocos({renderMedia, openBrowser, serveUrl, compos
       for (let x = fila.shift(); x; x = fila.shift()) {
         if (x.som) {
           // soSom: avisa a composição que só o som interessa (quem ignora o aviso também serve)
-          await renderMedia({serveUrl, composition, inputProps: {...inputProps, soSom: true}, puppeteerInstance: navegador, outputLocation: x.arq, frameRange: [x.a, x.b], codec: 'wav', concurrency: 1, timeoutInMilliseconds: 180000, logLevel: 'error', overwrite: true, cancelSignal});
+          await renderMedia({serveUrl, composition, inputProps: {...inputProps, soSom: true}, puppeteerInstance: navegador, outputLocation: x.arq, frameRange: [x.a, x.b], codec: 'wav', enforceAudioTrack: true, concurrency: 1, timeoutInMilliseconds: 180000, logLevel: 'error', overwrite: true, cancelSignal});
           x.pronto = true; avisa();
           continue;
         }
