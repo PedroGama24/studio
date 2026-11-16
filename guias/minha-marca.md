@@ -66,10 +66,12 @@ Faça em silêncio; diga só "Estou olhando o seu perfil, é rapidinho."
      data: (document.querySelector('time[datetime]') || {getAttribute: () => ''}).getAttribute('datetime'),
      video: !!document.querySelector('main video, article video'),
      numeros: (document.querySelector('main') || document.body).innerText.split('\n')
-       .filter(l => /curtid|likes?\b|coment|comment/i.test(l)).slice(0, 6),
+       .filter(l => /curti|liked|likes?\b|coment|comment/i.test(l)).slice(0, 6),
+     contagens: (document.querySelector('main') || document.body).innerText.split('\n')
+       .filter(l => /^\d[\d.,]*\s*(mil|k|m)?$/i.test(l.trim())).slice(0, 2),
    })
    ```
-   Em `numeros` vêm as linhas das curtidas ("Liked by X and N others", "Curtido por X e outras N pessoas" ou só um número) e dos comentários. Anote por post: data, foto ou vídeo, curtidas, comentários e assunto.
+   Em `numeros` vêm as linhas das curtidas ("Liked by X and N others", "Curtido por X e outras N pessoas") e dos comentários. Em `contagens` vêm os dois primeiros números soltos da página, que em geral são as curtidas e os comentários, nessa ordem. Anote por post: data, foto ou vídeo, curtidas, comentários e assunto.
    Os primeiros da grade podem ser posts fixados (antigos, presos no topo). Ordene pela `data`; na Frequência, não conte os fixados.
 4. **Visual.** Volte ao perfil e tire **1 print** da grade com `computer` (ação `screenshot`). Dele saem as cores, o enquadramento e se há texto escrito nas imagens.
 5. Em vídeo, separe pelo que se vê na legenda e no print: falado (a pessoa fala para a câmera), processo, antes e depois, foto do resultado, outro.
