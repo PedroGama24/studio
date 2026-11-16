@@ -56,16 +56,16 @@ brew install node python ffmpeg yt-dlp git
 
 ### Jeito fácil: peça ao Claude
 
-Abra uma sessão **Code** no Claude e cole o prompt do [COMECE.md](../COMECE.md). Ele clona, instala as dependências e as duas skills gratuitas (**remotion-best-practices** e **watch**). Quando terminar, ele já começa a conversa sobre a sua marca na mesma sessão. Para editar um vídeo depois, **abra uma sessão nova** do Claude dentro da pasta `studio`: skills novas só aparecem numa sessão nova.
+Abra uma sessão **Code** no Claude e cole o prompt do [COMECE.md](../COMECE.md). Ele baixa o estúdio numa pasta **Edição de Vídeo** (em Documentos, ou na pasta do usuário se Documentos estiver no OneDrive ou iCloud), segue o [INSTALAR.md](../INSTALAR.md), instala as dependências e as duas skills gratuitas (**remotion-best-practices** e **watch**). Quando terminar, ele já começa a conversa sobre a sua marca na mesma sessão. Para editar um vídeo depois, **abra uma sessão nova** do Claude dentro da pasta **Edição de Vídeo**: skills novas só aparecem numa sessão nova.
 
 ### Jeito manual
 
-Escolha uma pasta **fora** do OneDrive, iCloud ou Dropbox (a sincronização atrapalha o render). Por exemplo, `C:\dev` no Windows ou `~/dev` no Mac.
+Escolha uma pasta **fora** do OneDrive, iCloud ou Dropbox (a sincronização atrapalha o render). Por exemplo, Documentos, se ele não estiver no OneDrive, ou a sua pasta de usuário.
 
 ```bash
-cd C:\dev
-git clone https://github.com/PedroGama24/studio.git
-cd studio
+cd "$HOME/Documents"
+git clone https://github.com/PedroGama24/studio.git "Edição de Vídeo"
+cd "Edição de Vídeo"
 npm run instalar
 ```
 
@@ -104,4 +104,4 @@ Sem essa chave tudo funciona igual: o `tools/transcrever.py` transcreve localmen
 
 ## 6. Primeira conversa
 
-Se usou o prompt do COMECE.md, a conversa sobre a sua marca já começou na mesma sessão; senão, abra uma sessão **Code** na pasta `studio` e peça "quero conversar sobre a minha marca". Quando a análise terminar, abra uma conversa nova na mesma pasta e diga "quero editar um vídeo". O vídeo pronto sai em `edicoes/`.
+Se usou o prompt do COMECE.md, a conversa sobre a sua marca já começou na mesma sessão; senão, abra uma sessão **Code** na pasta **Edição de Vídeo** e peça "quero conversar sobre a minha marca". Quando a análise terminar, abra uma conversa nova na mesma pasta e diga "quero editar um vídeo". O vídeo pronto sai em `edicoes/`.
