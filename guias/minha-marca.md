@@ -9,9 +9,13 @@ A pessoa entende pouco de computador. Regras da conversa:
 - **Senha: nunca peça a senha, nunca digite a senha.** Quem entra no Instagram é a pessoa, com as mãos dela.
 - No Instagram, só leia. Não curta, não siga, não comente, não mande mensagem.
 - Economize: no máximo os **12 posts** mais recentes e **1 print** da grade. Não repita a análise sem ela pedir.
-- Todos os caminhos partem da pasta `studio`.
+- Arquivos sempre pelo caminho completo da pasta `studio` (passo 0), nunca pela pasta em que a conversa começou.
 
-Se `minha-marca/ANALISE.md` já existe e ela não pediu para refazer, mostre o resumo dele (passo 6) e pergunte se quer manter ou analisar de novo.
+## 0. Achar a pasta studio
+
+Em silêncio, descubra o caminho completo da pasta `studio`: é a pasta que tem este guia (`guias/minha-marca.md`) e o `tools/tema.mjs`. Na conversa da instalação, você pode estar na pasta de cima, onde o estúdio foi baixado. Daqui em diante, `<studio>` é esse caminho (ex.: `C:\Users\Ana\studio`). Use aspas: pode ter espaço e acento.
+
+Se `<studio>/minha-marca/ANALISE.md` já existe e ela não pediu para refazer, mostre o resumo dele (passo 6) e pergunte se quer manter ou analisar de novo.
 
 ## 1. Boas-vindas
 
@@ -33,13 +37,14 @@ Os outros links você só anota para a análise. Não abra.
 
 O app do Claude para computador tem um navegador próprio, um painel ao lado da conversa (ferramentas `mcp__Claude_Browser__*`). Ele não existe no site claude.ai; sem ele, vá para o passo 5.
 
-1. Abra `https://www.instagram.com/` com `preview_start` passando `url`.
-2. Rode `tabs_context`. Se o resultado disser que o painel está escondido, diga:
+1. Abra o perfil direto, `https://www.instagram.com/<usuario>/`, com `preview_start` passando `url`. Não leia o feed (é post dos outros e gasta muito).
+2. Se o app pedir para a pessoa permitir o instagram.com, explique: "O app está perguntando se eu posso abrir o Instagram. Pode clicar em permitir."
+3. Rode `tabs_context`. Se o resultado disser que o painel está escondido, diga:
    > Aperte **Ctrl+Shift+B** (no Mac, **Cmd+Shift+B**) ou clique no ícone do globo, lá em cima. Vai abrir uma janelinha do Instagram do lado.
-3. Confira a página com `get_page_text`. Se já está logado (aparece o feed ou o perfil), pule para o passo 4.
-4. Se aparece a tela de entrar, diga:
+4. Veja se precisa entrar, com `javascript_tool`: `!!document.querySelector('input[name="password"]')`. Se der `false`, já está logado: vá para o passo 4 do guia.
+5. Se der `true` (tela de entrar), diga:
    > Na janelinha do lado, entre na sua conta do Instagram, do jeito que você entra no celular. Eu não vejo nem guardo a sua senha. Quando terminar, me escreva "entrei".
-5. Se pedir código por SMS, e-mail ou "foi você?", quem resolve é a pessoa. Espere o "entrei" e confira de novo.
+6. Se pedir código por SMS, e-mail ou "foi você?", quem resolve é a pessoa. Espere o "entrei", abra o perfil de novo e confira de novo.
 
 Se ela não quiser entrar, ou não conseguir depois de duas tentativas, não insista: passo 5.
 
@@ -47,7 +52,7 @@ Se ela não quiser entrar, ou não conseguir depois de duas tentativas, não ins
 
 Faça em silêncio; diga só "Estou olhando o seu perfil, é rapidinho."
 
-1. **Números do topo.** `navigate` para `https://www.instagram.com/<usuario>/` e `get_page_text`: posts, seguidores, seguindo, nome e a bio.
+1. **Números do topo.** No perfil, `get_page_text` com `max_chars: 2000`: posts, seguidores, seguindo, nome e a bio.
 2. **Legendas da grade.** Com `javascript_tool`, o texto alternativo das imagens (a descrição que o Instagram guarda em cada foto) traz a legenda:
    ```js
    await new Promise(r => setTimeout(r, 2500));
@@ -60,10 +65,12 @@ Faça em silêncio; diga só "Estou olhando o seu perfil, é rapidinho."
    ({
      data: (document.querySelector('time[datetime]') || {getAttribute: () => ''}).getAttribute('datetime'),
      video: !!document.querySelector('main video, article video'),
-     texto: (document.querySelector('main') || document.body).innerText.slice(0, 1500),
+     numeros: (document.querySelector('main') || document.body).innerText.split('\n')
+       .filter(l => /curtid|likes?\b|coment|comment/i.test(l)).slice(0, 6),
    })
    ```
-   No `texto` estão as curtidas ("Liked by X and N others", "Curtido por X e outras N pessoas" ou só um número) e o número de comentários. Anote por post: data, foto ou vídeo, curtidas, comentários e assunto.
+   Em `numeros` vêm as linhas das curtidas ("Liked by X and N others", "Curtido por X e outras N pessoas" ou só um número) e dos comentários. Anote por post: data, foto ou vídeo, curtidas, comentários e assunto.
+   Os primeiros da grade podem ser posts fixados (antigos, presos no topo). Ordene pela `data`; na Frequência, não conte os fixados.
 4. **Visual.** Volte ao perfil e tire **1 print** da grade com `computer` (ação `screenshot`). Dele saem as cores, o enquadramento e se há texto escrito nas imagens.
 5. Em vídeo, separe pelo que se vê na legenda e no print: falado (a pessoa fala para a câmera), processo, antes e depois, foto do resultado, outro.
 
@@ -78,9 +85,17 @@ Faça em silêncio; diga só "Estou olhando o seu perfil, é rapidinho."
 
 O pedido de prints:
 
-> Sem problema. Me mande de 3 a 5 prints (fotos da tela) do seu Instagram ou do jeito de vídeo que você gosta: pode ser a grade do perfil, posts que deram certo ou vídeos. É só arrastar para esta conversa.
+> Sem problema. Me mande de 3 a 5 prints (fotos da tela) do seu Instagram ou de vídeos que você gosta: pode ser a grade do perfil, posts que deram certo ou uma tela parada de um vídeo. É só arrastar para esta conversa.
 
-Analise os prints com o mesmo modelo. O que não der para ver, escreva "não deu para ver". Se ela não tiver nenhum print, siga com o que ela contar e com o tema padrão (passo 7).
+Só prints: vídeo arrastado para a conversa você não consegue assistir. Analise os prints com o mesmo modelo. O que não der para ver, escreva "não deu para ver".
+
+Se ela não tiver nenhum print, pergunte, uma de cada vez:
+
+1. "Qual é a cor principal do seu negócio?"
+2. "O que você mais posta: trabalho pronto, o processo, antes e depois, ou você falando?"
+3. "Como você escreve as legendas: curtinhas e animadas, ou mais explicadas?"
+
+Siga com essas respostas e, se faltar cor, com o tema padrão (passo 7).
 
 ## 6. Resumo e aprovação
 
@@ -101,30 +116,32 @@ Se ela pedir mudança ("não, minha cor é o dourado"), ajuste o resumo, mostre 
 
 Só depois do sim:
 
-1. Crie `minha-marca/ANALISE.md` seguindo `guias/modelo-analise.md`: as 8 seções, na ordem, com o que você leu e o que ela corrigiu.
-2. Crie `minha-marca/tema.json`, com exatamente estas 4 chaves:
+1. Crie `<studio>/minha-marca/ANALISE.md` seguindo `<studio>/guias/modelo-analise.md`: as 8 seções, na ordem, com o que você leu e o que ela corrigiu.
+2. Crie `<studio>/minha-marca/tema.json`, com exatamente estas 4 chaves:
    ```json
    {"destaque": "#RRGGBB", "texto": "#RRGGBB", "fundo": "#RRGGBB", "fonte": "Arial Black, Arial, sans-serif"}
    ```
-   - `destaque`: a cor mais forte da marca, tirada do print (a palavra que está sendo dita fica nessa cor).
+   - `destaque`: a cor forte e viva da marca, tirada do print (a palavra que está sendo dita fica nessa cor). Nunca preto, cinza escuro ou marrom: se a marca só tem cores escuras, use a segunda cor dela ou o padrão `#FFE14D`.
    - `texto`: **sempre uma cor clara, quase branca** (ex.: `#FFFFFF`, `#F5F0E8`). Nos vídeos o texto fica por cima da imagem com sombra escura; letra escura some. Vale mesmo que a marca use letra escura.
-   - `fundo`: cor escura da marca que contraste com o `destaque` (ela é a letra da palavra ativa, em cima do `destaque`). Se o destaque for escuro, use um fundo claro.
+   - `fundo`: **sempre escuro** (ex.: `#111111` ou o preto da marca). Fica por baixo do `texto` claro e é a letra da palavra ativa, em cima do `destaque`.
    - `fonte`: a mais parecida com a letra do perfil, entre as que já vêm no computador: `Arial Black` ou `Impact` (grossa), `Georgia` ou `Times New Roman` (com serifa, aquele "pezinho" na letra), `Segoe UI` ou `Helvetica` (limpa), `Courier New` (de máquina de escrever). Termine com uma reserva: `, Arial, sans-serif`.
-   - Sem cor clara no perfil, use o padrão: `{"destaque": "#FFE14D", "texto": "#FFFFFF", "fundo": "#111111", "fonte": "Arial Black, Arial, sans-serif"}`.
-3. Rode `node tools/tema.mjs "minha-marca/tema.json"`. Se não imprimir `ok`, corrija o que ele apontar e rode de novo, até dar `ok`.
+   - Sem cor forte e viva no perfil, use o padrão: `{"destaque": "#FFE14D", "texto": "#FFFFFF", "fundo": "#111111", "fonte": "Arial Black, Arial, sans-serif"}`.
+3. Rode `cd "<studio>" && node tools/tema.mjs "minha-marca/tema.json"`. Se não imprimir `ok`, corrija o que ele apontar e rode de novo, até dar `ok`.
 
 Não mostre os arquivos para a pessoa. Diga só: "Pronto, anotei o jeito do seu perfil."
 
 ## 8. Fechamento
 
-Diga, nesta ordem:
+Diga, nesta ordem, trocando `<studio>` pelo caminho completo de verdade:
 
 > Agora abra uma conversa nova do Claude na pasta studio e diga: quero editar um vídeo.
 >
+> A pasta studio fica aqui: `<studio>`. É ela que você escolhe ao abrir a conversa nova.
+>
 > Lá eu crio uma pasta para você e digo o caminho. É só colocar o vídeo (ou os clipes) dentro dela, do jeito que saíram do celular, e me avisar. Os vídeos ficam só no seu computador.
 
-Se ela não souber abrir conversa nova, mostre: na aba Code do app, o botão de nova conversa, e a pasta `studio` escolhida como pasta de trabalho.
+Se ela não souber abrir conversa nova, mostre: na aba Code do app, o botão de nova conversa, e a pasta `<studio>` escolhida como pasta de trabalho.
 
 ## Analisa de novo
 
-Quando ela pedir "analisa de novo" (ou mudou o perfil), refaça do passo 3 ao 7. Sobrescreva só `minha-marca/ANALISE.md` e `minha-marca/tema.json`; não apague nem mexa em mais nada.
+Quando ela pedir "analisa de novo" (ou mudou o perfil), faça o passo 0 e refaça do passo 3 ao 7. Sobrescreva só `<studio>/minha-marca/ANALISE.md` e `<studio>/minha-marca/tema.json`; não apague nem mexa em mais nada.

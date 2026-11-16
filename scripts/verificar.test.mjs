@@ -55,4 +55,8 @@ test('skill minha-marca', () => {
   for (const frase of ['nunca peça a senha', '12 posts', 'prints', 'quer seguir dessa maneira?']) {
     assert.ok(guia.includes(frase), `guias/minha-marca.md deve conter "${frase}"`);
   }
+  assert.match(guia, /^## 0\. Achar a pasta studio/m, 'guia deve começar achando o caminho completo da pasta studio');
+  assert.match(guia, /cd "<studio>" && node tools\/tema\.mjs "minha-marca\/tema\.json"/);
+  assert.ok(guia.includes('<studio>/minha-marca/tema.json'), 'tema.json deve ser gravado pelo caminho completo');
+  assert.ok(!guia.includes('fundo claro'), 'fundo é sempre escuro: o texto claro fica por cima dele');
 });
