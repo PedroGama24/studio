@@ -12,9 +12,16 @@ test('tema inválido aponta cada campo errado', () => {
   const r = validarTema({destaque: 'amarelo', texto: '#FFF', fundo: '#111111'});
   assert.equal(r.ok, false);
   for (const campo of ['destaque', 'texto', 'fonte']) {
-    assert.ok(r.erros.some((e) => e.includes(campo)), `erros devem citar ${campo}`);
+    assert.ok(r.erros.some((e) => e.includes(`"${campo}"`)), `erros devem citar ${campo}`);
   }
-  assert.ok(!r.erros.some((e) => e.includes('fundo')));
+  assert.ok(!r.erros.some((e) => e.includes('"fundo"')));
+});
+
+test('só a cor texto inválida: só ela é citada', () => {
+  const r = validarTema({destaque: '#FFE14D', texto: '#FFF', fundo: '#111111', fonte: 'Arial'});
+  assert.equal(r.ok, false);
+  assert.equal(r.erros.length, 1);
+  assert.ok(r.erros[0].includes('"texto"'));
 });
 
 test('o que não é objeto é recusado', () => {
