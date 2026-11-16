@@ -32,3 +32,27 @@ test('dados do cliente fora do git', () => {
     assert.equal(ignorado(f), 1, `${f} não pode estar no .gitignore`);
   }
 });
+
+test('skill minha-marca', () => {
+  const ler = (f) => fs.readFileSync(path.join(raiz, f), 'utf8');
+  const skill = ler('.claude/skills/minha-marca/SKILL.md');
+  const frente = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  assert.ok(frente, 'SKILL.md precisa de frontmatter');
+  assert.match(frente[1], /^name: minha-marca$/m);
+  const descricao = frente[1].slice(frente[1].indexOf('description:'));
+  assert.ok(frente[1].includes('description:') && /Instagram/.test(descricao), 'description deve citar Instagram');
+
+  const modelo = ler('guias/modelo-analise.md');
+  const secoes = ['## Quem é', '## Links', '## Tom das legendas', '## O que mais engaja', '## Formatos', '## Visual', '## Frequência', '## Como os vídeos vão seguir este padrão'];
+  let ultimo = -1;
+  for (const s of secoes) {
+    const i = modelo.indexOf(s);
+    assert.ok(i > ultimo, `modelo-analise.md: "${s}" falta ou está fora de ordem`);
+    ultimo = i;
+  }
+
+  const guia = ler('guias/minha-marca.md');
+  for (const frase of ['nunca peça a senha', '12 posts', 'prints', 'quer seguir dessa maneira?']) {
+    assert.ok(guia.includes(frase), `guias/minha-marca.md deve conter "${frase}"`);
+  }
+});
