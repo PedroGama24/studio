@@ -52,4 +52,4 @@ tools/transcrever.py      transcrição local com tempo por palavra (faster-whis
 
 - Numeração: `NNN. slug`, três dígitos, igual em `projetos/` e `edicoes/`. Novo projeto = maior número + 1. O prefixo numérico não entra no slug de `src/videos/` nem nos ids de composição.
 - `projetos/` é a pasta pública do Remotion: `staticFile('<NNN. slug>/video/arquivo.mp4')`.
-- Comandos: `npm run studio`, `npm run typecheck`, `npm run compositions`, `npm run render -- <Composicao> "edicoes/<NNN. nome>/<nome>-final.mp4"` (render rápido em blocos, com placa de vídeo no Windows).
+- Comandos: `npm run studio`, `npm run typecheck`, `npm run compositions`, `npm run render -- <Composicao> "edicoes/<NNN. nome>/<nome>-final.mp4"` (render rápido em blocos, com placa de vídeo no Windows). Nunca apague `tmp/` de forma recursiva (PowerShell `Remove-Item -Recurse`): `tmp/render-*/bundle/public` pode ser um link para `projetos/`. Deixe o `npm run render` limpar; se precisar apagar à mão, solte antes esse link.

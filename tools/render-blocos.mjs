@@ -6,6 +6,7 @@
 // Também retoma um render interrompido: os blocos já feitos ficam no cache.
 // RENDER_CACHE=0 desliga o cache; RENDER_CACHE_GB (padrão 20) limita o tamanho da pasta.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync, spawnSync} from 'node:child_process';
@@ -42,9 +43,16 @@ export function hashFontes(caminhos, raiz = ROOT) {
   return h.digest('hex');
 }
 
-// Cache do OffthreadVideo por render (o padrão do Remotion é metade da RAM livre PARA CADA UM: 6 Chromes lendo 4K60 no 038
-// esgotaram os 40 GB e o compositor caiu). 1,5 GB cada; não muda a imagem. `RENDER_CACHE_OT_MB` muda.
-const CACHE_OT = Number(process.env.RENDER_CACHE_OT_MB ?? 1536) * 1024 ** 2;
+// Cache do OffthreadVideo e da mídia, por Chrome (o padrão do Remotion é metade da RAM livre PARA CADA UM e esgotou
+// 40 GB com 6 Chromes lendo 4K60). Usa ~25% da RAM, dividida entre os Chromes: 60% para o OffthreadVideo (até 1,5 GB)
+// e 40% para a mídia (até 1 GB), com piso. Não muda a imagem. `RENDER_CACHE_OT_MB` sobrepõe o do OffthreadVideo.
+const MB = 1024 ** 2;
+export function memoriaPorChrome(totalmem, chromes, env = process.env) {
+  const parte = (totalmem * 0.25) / Math.max(1, chromes);
+  const ot = env.RENDER_CACHE_OT_MB ? Number(env.RENDER_CACHE_OT_MB) * MB : Math.max(128 * MB, Math.min(1536 * MB, Math.floor(parte * 0.6)));
+  const media = Math.max(64 * MB, Math.min(1024 * MB, Math.floor(parte * 0.4)));
+  return {ot, media};
+}
 
 /** Blocos da grade fixa em [de, ate) com o arquivo de cache de cada um e se já existe. */
 export function planejarBlocos({de, ate, bloco = BLOCO, global, chave}) {
@@ -121,6 +129,7 @@ export async function renderEmBlocos({renderMedia, openBrowser, serveUrl, compos
   const blocos = (usarCache ? planejarBlocos({de, ate, bloco, global, chave})
     : planejarBlocos({de, ate, bloco, global, chave: () => ''}).map(x => ({...x, arq: path.join(pastaTemp, `bloco-${x.a}.mp4`), pronto: false})))
     .map(x => ({...x, feitos: 0}));
+  const memoria = memoriaPorChrome(os.totalmem(), navegadores.length);
   const pedacosSom = [];
   // Som numa peça só, sem emendas: cortado em pedaços, a 2ª parte do 015 saía 16 amostras deslocada.
   if (som) pedacosSom.push({som: true, a: de, b: ate - 1, arq: path.join(pastaTemp, `som-${de}.wav`)});
@@ -137,7 +146,7 @@ export async function renderEmBlocos({renderMedia, openBrowser, serveUrl, compos
   const fila = [...pedacosSom, ...blocos.filter(x => !x.pronto)];
   // Rede de segurança da placa de vídeo: bloco que falhar com ela é refeito num Chrome sem GPU (um só, aberto na hora).
   let semGpu = null, refeitosSemGpu = 0;
-  const desenha = (x, navegador, gl, parcial) => renderMedia({serveUrl, composition, inputProps, puppeteerInstance: navegador, outputLocation: parcial, frameRange: [x.a, x.b], codec: 'h264', pixelFormat: 'yuv420p', imageFormat: 'jpeg', muted: true, concurrency: 1, offthreadVideoCacheSizeInBytes: CACHE_OT, mediaCacheSizeInBytes: 1024 ** 3, timeoutInMilliseconds: gl ? 120000 : 180000, logLevel: 'error', x264Preset: X264_PRESET, chromiumOptions: chromium(gl), ...opcoes, overwrite: true, cancelSignal, onProgress: p => { x.feitos = p.renderedFrames; avisa(); }});
+  const desenha = (x, navegador, gl, parcial) => renderMedia({serveUrl, composition, inputProps, puppeteerInstance: navegador, outputLocation: parcial, frameRange: [x.a, x.b], codec: 'h264', pixelFormat: 'yuv420p', imageFormat: 'jpeg', muted: true, concurrency: 1, offthreadVideoCacheSizeInBytes: memoria.ot, mediaCacheSizeInBytes: memoria.media, timeoutInMilliseconds: gl ? 120000 : 180000, logLevel: 'error', x264Preset: X264_PRESET, chromiumOptions: chromium(gl), ...opcoes, overwrite: true, cancelSignal, onProgress: p => { x.feitos = p.renderedFrames; avisa(); }});
   try {
     await Promise.all(navegadores.slice(0, Math.max(1, fila.length)).map(async navegador => {
       for (let x = fila.shift(); x; x = fila.shift()) {

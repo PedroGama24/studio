@@ -18,7 +18,9 @@ export function lerArgs(argv) {
   return {composicao, saida};
 }
 
-const quantosChromes = () => Number(process.env.RENDER_CHROMES) || Math.max(1, Math.min(4, Math.floor(os.cpus().length / 2)));
+// Pouca RAM, menos Chromes: um por ~4 GB (8 GB → 2, 16 GB ou mais → até 4).
+export const chromesPadrao = (cpus, totalmem) => Math.max(1, Math.min(4, Math.floor(cpus / 2), Math.floor(totalmem / 1024 ** 3 / 4)));
+const quantosChromes = () => Number(process.env.RENDER_CHROMES) || chromesPadrao(os.cpus().length, os.totalmem());
 
 // Nome, tamanho e data de tudo que há em projetos/: trocar um vídeo ou print refaz só o que depende dele.
 function assinaturaProjetos() {
@@ -42,13 +44,32 @@ function ligarProjetos(bundleDir) {
   fs.symlinkSync(PROJETOS, link, process.platform === 'win32' ? 'junction' : 'dir');
 }
 
+// Remove o link para projetos/ de uma pasta de render, sem tocar no conteúdo.
+function soltarLink(pastaRender) {
+  try { fs.unlinkSync(path.join(pastaRender, 'bundle', 'public')); } catch { /* sem link */ }
+}
+
+/** Pastas tmp/render-* que sobraram de um render interrompido: solta o link para projetos/ e só então apaga. */
+export function limparRendersAntigos(tmp) {
+  if (!fs.existsSync(tmp)) return;
+  for (const nome of fs.readdirSync(tmp)) {
+    if (!/^render-\d+$/.test(nome)) continue;
+    const pasta = path.join(tmp, nome);
+    soltarLink(pasta);
+    fs.rmSync(pasta, {recursive: true, force: true});
+  }
+}
+
 export async function renderizar({composicao: id, saida}) {
   const {bundle} = await import('@remotion/bundler');
   const {openBrowser, selectComposition, renderMedia} = await import('@remotion/renderer');
   const destino = path.resolve(saida);
   fs.mkdirSync(path.dirname(destino), {recursive: true});
+  limparRendersAntigos(path.join(RAIZ, 'tmp'));
   const temp = path.join(RAIZ, 'tmp', `render-${process.pid}`);
-  fs.rmSync(temp, {recursive: true, force: true});
+  // Ctrl+C ou terminal fechado: o finally não roda, então solta o link aqui.
+  const sair = sinal => () => { soltarLink(temp); process.exit(sinal === 'SIGINT' ? 130 : 143); };
+  for (const sinal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(sinal, sair(sinal));
   fs.mkdirSync(path.join(temp, 'public-vazio'), {recursive: true});
   const navegadores = [];
   try {
@@ -74,8 +95,7 @@ export async function renderizar({composicao: id, saida}) {
   } finally {
     await Promise.all(navegadores.map(n => n.close({silent: true}).catch(() => {})));
     // Só o que este render criou: a pasta temporária (o link para projetos/ some junto, o conteúdo não).
-    const link = path.join(temp, 'bundle', 'public');
-    try { fs.unlinkSync(link); } catch { /* sem link */ }
+    soltarLink(temp);
     fs.rmSync(temp, {recursive: true, force: true});
   }
 }
