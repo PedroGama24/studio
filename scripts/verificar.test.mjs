@@ -55,7 +55,7 @@ test('skill minha-marca', () => {
   for (const frase of ['nunca peça a senha', '12 posts', 'prints', 'quer seguir dessa maneira?']) {
     assert.ok(guia.includes(frase), `guias/minha-marca.md deve conter "${frase}"`);
   }
-  assert.match(guia, /^## 0\. Achar a pasta studio/m, 'guia deve começar achando o caminho completo da pasta studio');
+  assert.match(guia, /^## 0\. Achar a pasta do estúdio/m, 'guia deve começar achando o caminho completo da pasta do estúdio');
   assert.match(guia, /cd "<studio>" && node tools\/tema\.mjs "minha-marca\/tema\.json"/);
   assert.ok(guia.includes('<studio>/minha-marca/tema.json'), 'tema.json deve ser gravado pelo caminho completo');
   assert.ok(!guia.includes('fundo claro'), 'fundo é sempre escuro: o texto claro fica por cima dele');
@@ -87,8 +87,17 @@ test('readme', () => {
   };
   const prompt = bloco('README.md');
   assert.equal(bloco('COMECE.md'), prompt, 'README.md e COMECE.md devem ter o mesmo prompt');
-  for (const trecho of ['https://github.com/PedroGama24/studio.git', 'C:\\dev\\studio', '.claude/skills/minha-marca/SKILL.md', 'winget', 'brew', 'git pull', 'npm run instalar']) {
+  for (const trecho of ['https://github.com/PedroGama24/studio.git', 'Edição de Vídeo', 'Documentos', 'OneDrive', 'INSTALAR.md', 'winget install Git.Git']) {
     assert.ok(prompt.includes(trecho), `o prompt deve conter "${trecho}"`);
+  }
+  assert.ok(prompt.split('\n').length <= 6, 'o prompt deve ser curto (no máximo 6 linhas)');
+  assert.doesNotMatch(prompt, /C:\\dev|~\/dev/, 'o prompt não usa mais C:\\dev');
+  const instalar = ler('INSTALAR.md');
+  for (const trecho of ['--version', 'Python.Python.3.12', 'Gyan.FFmpeg', 'OpenJS.NodeJS.LTS', 'brew', 'git pull', 'npm run instalar', 'pintohome', '.claude/skills/minha-marca/SKILL.md', 'Edição de Vídeo']) {
+    assert.ok(instalar.includes(trecho), `INSTALAR.md deve conter "${trecho}"`);
+  }
+  for (const f of ['README.md', 'COMECE.md', 'INSTALAR.md', 'guias/1-primeiros-passos.md', 'guias/minha-marca.md']) {
+    assert.doesNotMatch(ler(f), /C:\\dev|~\/dev|pasta `?studio`?\b/, `${f} não pode mandar a pessoa para C:\\dev nem para a "pasta studio"`);
   }
   for (const f of ['README.md', 'COMECE.md']) assert.doesNotMatch(ler(f), /higgsfield|nível|hf\/|edit\.jsx/i, `${f} não pode citar Higgsfield, nível, hf/ nem edit.jsx`);
   const readme = ler('README.md');

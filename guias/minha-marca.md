@@ -9,11 +9,11 @@ A pessoa entende pouco de computador. Regras da conversa:
 - **Senha: nunca peça a senha, nunca digite a senha.** Quem entra no Instagram é a pessoa, com as mãos dela.
 - No Instagram, só leia. Não curta, não siga, não comente, não mande mensagem.
 - Economize: no máximo os **12 posts** mais recentes e **1 print** da grade. Não repita a análise sem ela pedir.
-- Arquivos sempre pelo caminho completo da pasta `studio` (passo 0), nunca pela pasta em que a conversa começou.
+- Arquivos sempre pelo caminho completo da pasta do estúdio (passo 0), nunca pela pasta em que a conversa começou.
 
-## 0. Achar a pasta studio
+## 0. Achar a pasta do estúdio
 
-Em silêncio, descubra o caminho completo da pasta `studio`: é a pasta que tem este guia (`guias/minha-marca.md`) e o `tools/tema.mjs`. Na conversa da instalação, você pode estar na pasta de cima, onde o estúdio foi baixado. Daqui em diante, `<studio>` é esse caminho (ex.: `C:\Users\Ana\studio`). Use aspas: pode ter espaço e acento.
+Em silêncio, descubra o caminho completo da pasta do estúdio (normalmente **Edição de Vídeo**): é a pasta que tem este guia (`guias/minha-marca.md`) e o `tools/tema.mjs`. Na conversa da instalação, você pode estar na pasta de cima, onde o estúdio foi baixado. Daqui em diante, `<studio>` é esse caminho (ex.: `C:\Users\Ana\Documents\Edição de Vídeo`). Use aspas: pode ter espaço e acento.
 
 Se `<studio>/minha-marca/ANALISE.md` já existe e ela não pediu para refazer, mostre o resumo dele (passo 6) e pergunte se quer manter ou analisar de novo.
 
@@ -136,9 +136,9 @@ Não mostre os arquivos para a pessoa. Diga só: "Pronto, anotei o jeito do seu 
 
 Diga, nesta ordem, trocando `<studio>` pelo caminho completo de verdade:
 
-> Agora abra uma conversa nova do Claude na pasta studio e diga: quero editar um vídeo.
+> Agora abra uma conversa nova do Claude na pasta Edição de Vídeo e diga: quero editar um vídeo.
 >
-> A pasta studio fica aqui: `<studio>`. É ela que você escolhe ao abrir a conversa nova.
+> A pasta Edição de Vídeo fica aqui: `<studio>`. É ela que você escolhe ao abrir a conversa nova.
 >
 > Lá eu crio uma pasta para você e digo o caminho. É só colocar o vídeo (ou os clipes) dentro dela, do jeito que saíram do celular, e me avisar. Os vídeos ficam só no seu computador.
 
