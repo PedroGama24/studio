@@ -60,3 +60,27 @@ test('limparRendersAntigos solta o link e preserva projetos/', async () => {
     assert.equal(fs.readFileSync(path.join(projetos, 'video.mp4'), 'utf8'), 'x');
   } finally { fs.rmSync(base, {recursive: true, force: true}); }
 });
+
+test('limparRendersAntigos não mexe em render que ainda está rodando', async () => {
+  const {limparRendersAntigos} = await import('../tools/render.mjs');
+  const fs = await import('node:fs'), os = await import('node:os'), path = await import('node:path');
+  const base = fs.mkdtempSync(path.join(os.tmpdir(), 'render-test-'));
+  try {
+    const projetos = path.join(base, 'projetos'), tmp = path.join(base, 'tmp');
+    fs.mkdirSync(projetos); fs.writeFileSync(path.join(projetos, 'video.mp4'), 'x');
+    const liga = pid => {
+      const bundle = path.join(tmp, `render-${pid}`, 'bundle');
+      fs.mkdirSync(bundle, {recursive: true});
+      fs.symlinkSync(projetos, path.join(bundle, 'public'), process.platform === 'win32' ? 'junction' : 'dir');
+    };
+    const morto = 2 ** 22 + 12345; // acima do limite de PIDs em uso comum
+    liga(process.pid); liga(morto);
+    limparRendersAntigos(tmp);
+    assert.equal(fs.existsSync(path.join(tmp, `render-${process.pid}`, 'bundle', 'public', 'video.mp4')), true, 'render vivo preservado');
+    assert.equal(fs.existsSync(path.join(tmp, `render-${morto}`)), false, 'render morto apagado');
+    assert.equal(fs.readFileSync(path.join(projetos, 'video.mp4'), 'utf8'), 'x');
+  } finally {
+    try { fs.unlinkSync(path.join(base, 'tmp', `render-${process.pid}`, 'bundle', 'public')); } catch {}
+    fs.rmSync(base, {recursive: true, force: true});
+  }
+});

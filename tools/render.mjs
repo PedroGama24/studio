@@ -45,33 +45,48 @@ function ligarProjetos(bundleDir) {
 }
 
 // Remove o link para projetos/ de uma pasta de render, sem tocar no conteúdo.
+// Devolve true só se o link não existe mais: só então é seguro apagar a pasta.
 function soltarLink(pastaRender) {
-  try { fs.unlinkSync(path.join(pastaRender, 'bundle', 'public')); } catch { /* sem link */ }
+  const link = path.join(pastaRender, 'bundle', 'public');
+  try { fs.unlinkSync(link); } catch { /* sem link, ou não deu para soltar: a conferência abaixo decide */ }
+  try { fs.lstatSync(link); return false; } catch (e) { return e.code === 'ENOENT'; }
 }
 
-/** Pastas tmp/render-* que sobraram de um render interrompido: solta o link para projetos/ e só então apaga. */
+const vivo = pid => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === 'EPERM'; } };
+
+/** Pastas tmp/render-* de renders que já morreram: solta o link para projetos/ e só então apaga. Pasta de render em andamento fica. */
 export function limparRendersAntigos(tmp) {
   if (!fs.existsSync(tmp)) return;
   for (const nome of fs.readdirSync(tmp)) {
-    if (!/^render-\d+$/.test(nome)) continue;
+    const m = /^render-(\d+)$/.exec(nome);
+    if (!m || vivo(Number(m[1]))) continue;
     const pasta = path.join(tmp, nome);
-    soltarLink(pasta);
-    fs.rmSync(pasta, {recursive: true, force: true});
+    if (soltarLink(pasta)) fs.rmSync(pasta, {recursive: true, force: true});
   }
 }
 
 export async function renderizar({composicao: id, saida}) {
   const {bundle} = await import('@remotion/bundler');
-  const {openBrowser, selectComposition, renderMedia} = await import('@remotion/renderer');
+  const {openBrowser, selectComposition, renderMedia, makeCancelSignal} = await import('@remotion/renderer');
   const destino = path.resolve(saida);
   fs.mkdirSync(path.dirname(destino), {recursive: true});
   limparRendersAntigos(path.join(RAIZ, 'tmp'));
   const temp = path.join(RAIZ, 'tmp', `render-${process.pid}`);
-  // Ctrl+C ou terminal fechado: o finally não roda, então solta o link aqui.
-  const sair = sinal => () => { soltarLink(temp); process.exit(sinal === 'SIGINT' ? 130 : 143); };
-  for (const sinal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(sinal, sair(sinal));
-  fs.mkdirSync(path.join(temp, 'public-vazio'), {recursive: true});
   const navegadores = [];
+  const {cancel, cancelSignal} = makeCancelSignal();
+  // Ctrl+C ou terminal fechado: o finally não roda. Cancela o render, fecha os Chromes (até 3 s), solta o link e sai.
+  let saindo = false;
+  const aoSinal = async sinal => {
+    if (saindo) return;
+    saindo = true;
+    try { cancel(); } catch { /* já terminou */ }
+    await Promise.race([Promise.all(navegadores.map(n => n.close({silent: true}).catch(() => {}))), new Promise(r => setTimeout(r, 3000))]);
+    soltarLink(temp);
+    process.exit(sinal === 'SIGINT' ? 130 : 143);
+  };
+  const sinais = ['SIGINT', 'SIGTERM', 'SIGHUP'];
+  sinais.forEach(sinal => process.on(sinal, aoSinal));
+  fs.mkdirSync(path.join(temp, 'public-vazio'), {recursive: true});
   try {
     console.log('Preparando o vídeo...');
     const serveUrl = await bundle({entryPoint: path.join(RAIZ, 'src', 'index.ts'), outDir: path.join(temp, 'bundle'), publicDir: path.join(temp, 'public-vazio'), enableCaching: false});
@@ -85,7 +100,7 @@ export async function renderizar({composicao: id, saida}) {
     const imagem = path.join(temp, 'imagem.mp4'), som = path.join(temp, 'audio.wav');
     console.log(`Desenhando ${composition.durationInFrames} quadros com ${chromes} Chrome(s)...`);
     let ultimo = -1;
-    const r = await renderEmBlocos({renderMedia, openBrowser, serveUrl, composition, inputProps, navegadores, chave: () => global.codigo + global.projetos, global, opcoes: {crf: 17, jpegQuality: 95}, saida: imagem, som, onProgress: p => {
+    const r = await renderEmBlocos({renderMedia, openBrowser, serveUrl, composition, inputProps, navegadores, chave: () => global.codigo + global.projetos, global, opcoes: {crf: 17, jpegQuality: 95}, saida: imagem, som, cancelSignal, onProgress: p => {
       const pct = Math.floor(p.feitos / p.total * 10) * 10;
       if (pct !== ultimo) { ultimo = pct; console.log(`  ${pct}%${p.reaproveitados ? ` (${p.reaproveitados}/${p.blocos} blocos já prontos)` : ''}`); }
     }});
@@ -95,8 +110,9 @@ export async function renderizar({composicao: id, saida}) {
   } finally {
     await Promise.all(navegadores.map(n => n.close({silent: true}).catch(() => {})));
     // Só o que este render criou: a pasta temporária (o link para projetos/ some junto, o conteúdo não).
-    soltarLink(temp);
-    fs.rmSync(temp, {recursive: true, force: true});
+    sinais.forEach(sinal => process.off(sinal, aoSinal));
+    if (soltarLink(temp)) fs.rmSync(temp, {recursive: true, force: true});
+    else console.warn(`Não consegui soltar o link para projetos/ em ${temp}. Não apague essa pasta de forma recursiva.`);
   }
 }
 
