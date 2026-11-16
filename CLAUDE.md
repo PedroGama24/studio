@@ -45,10 +45,11 @@ edicoes/<NNN. slug>/      somente entregáveis finais
 src/Root.tsx              registro das composições do Remotion
 src/videos/<slug>/        código de cada vídeo
 src/estilos/              exemplos de estilo vertical, rodam sem vídeo
-src/_shared/              primitivas: synchronized-split.tsx (obrigatória em telas divididas), metadata.ts
+src/_shared/              primitivas: synchronized-split.tsx (obrigatória em telas divididas), metadata.ts, previa.tsx (VideoRender, vídeos de 60 fps no render)
+tools/render.mjs         render rápido (npm run render); render-blocos.mjs é o motor
 tools/transcrever.py      transcrição local com tempo por palavra (faster-whisper, gratuito)
 ```
 
 - Numeração: `NNN. slug`, três dígitos, igual em `projetos/` e `edicoes/`. Novo projeto = maior número + 1. O prefixo numérico não entra no slug de `src/videos/` nem nos ids de composição.
 - `projetos/` é a pasta pública do Remotion: `staticFile('<NNN. slug>/video/arquivo.mp4')`.
-- Comandos: `npm run studio`, `npm run typecheck`, `npm run compositions`.
+- Comandos: `npm run studio`, `npm run typecheck`, `npm run compositions`, `npm run render -- <Composicao> "edicoes/<NNN. nome>/<nome>-final.mp4"` (render rápido em blocos, com placa de vídeo no Windows).

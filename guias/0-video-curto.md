@@ -110,7 +110,7 @@ Olhe: rosto coberto, texto cortado, faixa do app, print cortado, marca-texto for
 Render:
 
 ```bash
-npx remotion render src/index.ts <Composicao> "edicoes/<NNN. nome>/<nome>-final.mp4" --codec=h264 --crf=17
+npm run render -- <Composicao> "edicoes/<NNN. nome>/<nome>-final.mp4"
 ```
 
 Confira com `ffprobe`: 1080×1920, fps e duração do master, uma trilha de áudio. Apague só intermediário que você criou.
