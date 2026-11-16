@@ -77,3 +77,20 @@ test('video-curto', () => {
     assert.doesNotMatch(texto, /higgsfield|nível|horizontal/i, `${f} não pode citar Higgsfield, nível nem horizontal`);
   }
 });
+
+test('readme', () => {
+  const ler = (f) => fs.readFileSync(path.join(raiz, f), 'utf8');
+  const bloco = (f) => {
+    const m = ler(f).match(/```text\r?\n([\s\S]*?)\r?\n```/);
+    assert.ok(m, `${f} precisa de um bloco text com o prompt`);
+    return m[1].replace(/\r\n/g, '\n');
+  };
+  const prompt = bloco('README.md');
+  assert.equal(bloco('COMECE.md'), prompt, 'README.md e COMECE.md devem ter o mesmo prompt');
+  for (const trecho of ['https://github.com/PedroGama24/studio.git', 'C:\\dev\\studio', '.claude/skills/minha-marca/SKILL.md', 'winget', 'brew']) {
+    assert.ok(prompt.includes(trecho), `o prompt deve conter "${trecho}"`);
+  }
+  const readme = ler('README.md');
+  assert.ok(readme.includes('Macks Wendhell') && readme.includes('LICENSE'), 'README deve creditar Macks Wendhell e citar LICENSE');
+  assert.doesNotMatch(ler('guias/1-primeiros-passos.md'), /higgsfield|nível/i, 'guia de instalação não pode citar Higgsfield nem nível');
+});

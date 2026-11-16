@@ -21,8 +21,14 @@ for (const [nome, comando, opcional] of passos) {
   if (r.status !== 0 && !opcional) falhas.push(nome);
 }
 
-for (const programa of ['ffmpeg -version', 'ffprobe -version']) {
+for (const programa of ['git --version', 'ffmpeg -version', 'ffprobe -version']) {
   if (spawnSync(programa, {stdio: 'ignore', shell: true}).status !== 0) falhas.push(`${programa.split(' ')[0]} (instale pelo guia)`);
+}
+
+// Os testes importam .ts direto no Node (a partir da 22.18); o projeto usa o Node 24.
+const [maior, menor] = process.versions.node.split('.').map(Number);
+if (maior < 22 || (maior === 22 && menor < 18)) {
+  falhas.push(`Node ${process.versions.node} é antigo demais (precisa da 22.18 ou mais nova; o ideal é a 24). Atualize: winget upgrade OpenJS.NodeJS.LTS (Windows) ou brew upgrade node (Mac)`);
 }
 
 console.log('\n' + '='.repeat(60));
