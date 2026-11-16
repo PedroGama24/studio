@@ -60,3 +60,20 @@ test('skill minha-marca', () => {
   assert.ok(guia.includes('<studio>/minha-marca/tema.json'), 'tema.json deve ser gravado pelo caminho completo');
   assert.ok(!guia.includes('fundo claro'), 'fundo é sempre escuro: o texto claro fica por cima dele');
 });
+
+test('video-curto', () => {
+  const ler = (f) => fs.readFileSync(path.join(raiz, f), 'utf8');
+  const guia = ler('guias/0-video-curto.md');
+  for (const trecho of ['minha-marca/ANALISE.md', 'minha-marca/tema.json', 'tools/tem-fala.mjs', 'VerticalMontagem', 'duracaoMontagem', 'npm run render', 'música']) {
+    assert.ok(guia.includes(trecho), `guias/0-video-curto.md deve conter "${trecho}"`);
+  }
+  const apagados = ['guias/2-nivel-1-remotion.md', 'guias/3-manual-remotion.md', 'guias/5-direcao-editorial.md'];
+  for (const f of apagados) {
+    assert.equal(fs.existsSync(path.join(raiz, f)), false, `${f} deveria ter sido apagado`);
+  }
+  for (const f of ['guias/0-video-curto.md', '.claude/skills/video-curto/SKILL.md', 'CLAUDE.md']) {
+    const texto = ler(f);
+    assert.doesNotMatch(texto, /2-nivel-1-remotion|3-manual|5-direcao/, `${f} não pode apontar para guia apagado`);
+    assert.doesNotMatch(texto, /higgsfield|nível|horizontal/i, `${f} não pode citar Higgsfield, nível nem horizontal`);
+  }
+});
