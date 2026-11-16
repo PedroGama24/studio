@@ -8,7 +8,7 @@
     "studio": "remotion studio src/index.ts",
     "compositions": "remotion compositions src/index.ts",
     "typecheck": "tsc --noEmit && node scripts/check-split-layouts.mjs",
-    "verificar": "node --test \"scripts/*.test.mjs\"",
+    "verificar": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"scripts/*.test.mjs\"",
     "render": "node tools/render.mjs"
   },
   "dependencies": {

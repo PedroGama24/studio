@@ -2,6 +2,7 @@ import React from 'react';
 import {AbsoluteFill, interpolate, Sequence, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CameraFalsa, clamp, suave} from './_comum';
 import {VideoRender} from '../_shared/previa';
+import {quadrosDoClipe} from '../_shared/montagem';
 import {TEMA_PADRAO, type Tema} from '../_shared/tema';
 
 // Estilo "montagem" (9:16) para vídeo sem fala: clipes um depois do outro, cada um preenchendo a tela,
@@ -57,7 +58,7 @@ export const VerticalMontagem: React.FC<{clipes: Clipe[]; textos: Texto[]; tema?
         <CameraFalsa preencher />
       ) : (
         clipes.map((c, i) => {
-          const duracao = Math.max(1, Math.round((c.ate - c.de) * fps));
+          const {inicio: ini, duracao} = quadrosDoClipe(c, fps);
           const de = inicio;
           inicio += duracao;
           return (
@@ -65,8 +66,8 @@ export const VerticalMontagem: React.FC<{clipes: Clipe[]; textos: Texto[]; tema?
               <AbsoluteFill>
                 <VideoRender
                   src={c.src}
-                  trimBefore={Math.round(c.de * fps)}
-                  trimAfter={Math.round(c.ate * fps)}
+                  trimBefore={ini}
+                  trimAfter={ini + duracao}
                   muted={!somOriginal}
                   objectFit="cover"
                   style={{width: '100%', height: '100%'}}
